@@ -21,6 +21,7 @@ class BlobPngHandler(http.server.BaseHTTPRequestHandler):
         
         # 发送图片数据
         self.wfile.write(image_data)
+        
  
 # 创建服务器实例
 def run(server_class=http.server.HTTPServer, handler_class=BlobPngHandler):
