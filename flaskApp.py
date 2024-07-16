@@ -2,9 +2,9 @@ from flask import Flask, request, jsonify
 import mysql.connector
 
 from flask_cors import cross_origin # 未特定路由启用cors
-# from flask_cors import CORS   # 全局允许跨域请求
+from flask_cors import CORS   # 全局允许跨域请求
 app = Flask(__name__)
-# CORS(app)  # 全局允许跨域请求
+CORS(app)  # 全局允许跨域请求
 
 
 
@@ -66,7 +66,7 @@ def get_all():
     return jsonify(products)
 
 @app.route('/get_nav_list', methods=['GET'])
-@cross_origin(origins="http://127.0.0.1:5174")  # 这将为这个路由启用CORS
+@cross_origin(origins="http://localhost:5174")  # 这将为这个路由启用CORS
 def get_nav_list():
     conn = mysql.connector.connect(**config)
     cursor = conn.cursor(dictionary=True)
