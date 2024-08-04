@@ -26,11 +26,13 @@ def db_connection():
     return conn
 
 # 定义CRUD操作的路由
-@app.route('/add', methods=['POST'])
-def add():
-    # 获取请求数据并添加到数据库
-    # ...
-    return jsonify({'message': 'Added successfully'})
+# @app.route('/add', methods=['POST'])
+# def add():
+#     # 获取请求数据并添加到数据库
+#     # ...
+#     return jsonify({'message': 'Added successfully'})
+
+
 
 @app.route('/update', methods=['PUT'])
 def update():
@@ -79,6 +81,48 @@ def get_nav_list():
     result = [dict(row) for row in rows]
     return jsonify(result)
 
+""" @app.route('/add_nav', methods=['POST'])
+@cross_origin(origins="http://localhost:5174")  # 这将为这个路由启用CORS
+def add_nav():
+    print("add_nav")
+    name = request.form['name'].get()
+    type = request.form['type'].strip()
+    list = request.form['list'].strip()
+    try:
+        conn = mysql.connector.connect(**config)
+        with conn.cursor() as cursor:
+            sql = "INSERT INTO `nav_list` (`name`, `type`,`list`) VALUES (%s, %s,%s)"
+            cursor.execute(sql, (name, type,list))
+            rows = cursor.fetchall()
+            cursor.close()
+            result = [dict(row) for row in rows]
+            return jsonify(result)
+    except Exception as e:
+        cursor.close()
+        print(e) """
+
+# 增加一条数据
+@app.route("/add_nav", methods=['POST'])
+@cross_origin(origins="http://localhost:5174") 
+def add_nav():
+    id = request.form.get("id")
+    name = request.form.get("name")
+    list = request.form.get("list")
+    type = request.form.get("type")
+
+    if not id or not name or not list or not list:
+        return jsonify({"message": "缺少必填参数"}), 400
+
+    try:
+        query = "insert into nav_list (id, name, list, type) values (%s,%s, %s, %s)"
+        conn = mysql.connector.connect(**config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(query, (id,name, list,type))
+        conn.commit()
+        return jsonify({"message": f"{name}新增成功"}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+
 # 启动Flask应用
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0',port=5000)
