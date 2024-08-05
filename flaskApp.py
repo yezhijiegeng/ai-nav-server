@@ -133,6 +133,58 @@ def add_nav():
         return jsonify({"message": f"{name}新增成功", "code": 200}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 500
+    
+
+    
+# 修改某条数据
+@app.route("/update_nav/<int:id>", methods=['PUT'])
+@cross_origin(origins="http://localhost:5174")
+def update_nav(id):
+
+    data = request.get_json()  # 获取JSON数据
+    name = data.get("name")
+    type = data.get("type")
+
+    if not name and not type:
+        return jsonify({"message": "缺少必要参数"}), 400
+
+    update_query = "update nav_list set "
+    update_params = []
+
+    if name:
+        update_query += "name=%s, "
+        update_params.append(name)
+    if type:
+        update_query += "type=%s, "
+        update_params.append(type)
+
+    update_query = update_query.rstrip(', ')
+
+    query = f"{update_query} where id=%s"
+    update_params.append(id)
+    # print(query)
+    # print(update_params)
+    try:
+        conn = mysql.connector.connect(**config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(query, tuple(update_params))
+        conn.commit()
+        return jsonify({"message": f"学生{name}信息更新成功", "code": 200}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+    
+# 删除某条数据
+@app.route("/delete_nav/<int:id>", methods=['DELETE'])
+def delete_nav(id):
+    query = "delete from nav_list where id=%s"
+    try:
+        conn = mysql.connector.connect(**config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(query, (id,))
+        conn.commit()
+        return jsonify({"message": f"分类 {id} 删除成功", "code": 200}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
 
 
 # 启动Flask应用
